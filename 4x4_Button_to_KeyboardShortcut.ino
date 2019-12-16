@@ -49,59 +49,12 @@ void loop() {
     if (val > 30 && val <= 92) { btnNum = 1; }
     if (val >= 0 && val <= 30) { btnNum = 0; }
 
-    Serial.print(val); Serial.print(" - Btn #"); Serial.println(btnNum);
+    //Serial.print(val); Serial.print(" - Btn #"); Serial.println(btnNum);
     sendKeyboardShortcut(btnNum);
     
-    delay(500);
-    Serial.println("-----");
+    delay(500); // Note: if you hold down button for more than this, the keyboard shortcut will be sent again!
+    //Serial.println("-----");
   }
-  
-  
-  /*
-  val = analogRead(analogPin);
-  
-  if (val <= 992) {
-    // SOME button is pressed
-    //if (btnNum != prevBtnNum) {
-      delay(100); // Debounce button
-      val = analogRead(analogPin);  // Re-read the pin now that button's been debounced
-    //}
-
-    // Determine which button was pressed
-    if (val > 929 && val <= 992) { btnNum = 15; }
-    if (val > 864 && val <= 929) { btnNum = 14; }
-    if (val > 798 && val <= 864) { btnNum = 13; }
-    if (val > 733 && val <= 798) { btnNum = 12; }
-    if (val > 671 && val <= 733) { btnNum = 11; }
-    if (val > 608 && val <= 671) { btnNum = 10; }
-    if (val > 543 && val <= 608) { btnNum = 9; }
-    if (val > 479 && val <= 543) { btnNum = 8; }
-    if (val > 413 && val <= 479) { btnNum = 7; }
-    if (val > 348 && val <= 413) { btnNum = 6; }
-    if (val > 285 && val <= 348) { btnNum = 5; }
-    if (val > 221 && val <= 285) { btnNum = 4; }
-    if (val > 157 && val <= 221) { btnNum = 3; }
-    if (val > 92 && val <= 157) { btnNum = 2; }
-    if (val > 30 && val <= 92) { btnNum = 1; }
-    if (val >= 0 && val <= 30) { btnNum = 0; }
-    
-    if (btnNum != prevBtnNum && prevBtnNum == 255) {  // (&& prevBtnNum==255) to debouce 'release' too.
-      //delay(100);  // Debounce button press
-      //val = analogRead(analogPin);  // Re-read the pin, now that button has been debounced.
-    
-      Serial.print(val); Serial.print(" - Btn #"); Serial.println(btnNum);
-      sendKeyboardShortcut(btnNum);
-      prevBtnNum = btnNum;
-      
-      //delay(200);  // Debounce button press
-    }
-    
-    //delay(1000);
-  } else {
-    // No Button is being pressed, so reset prevBtnNum
-    prevBtnNum = 255;  // None
-  }*/
-  
 }
 
 void sendKeyboardShortcut(byte btnNum) {
