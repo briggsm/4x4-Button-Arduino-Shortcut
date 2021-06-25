@@ -13,48 +13,70 @@ char rightKey = KEY_RIGHT_ARROW;
 
 int analogPin = A3;
 
-int val = 0;
-byte btnNum = 255;
-byte prevBtnNum = 255;
-
 void setup() {
   Serial.begin(115200);
 }
 
 void loop() {
   
-  val = analogRead(analogPin);
-  if (val <= 992) {
-    // SOME button is pressed
+  int val = analogRead(analogPin);
+  if (val <= 970) {
     delay(20); // Debounce button
-    val = analogRead(analogPin);  // Re-read the pin now that button's been debounced
-    if (val > 992) { return; }  // Make sure value is still a button press
-    
-    // Determine which button was pressed
 
-    if (val > 929 && val <= 992) { btnNum = 15; }
-    if (val > 864 && val <= 929) { btnNum = 14; }
-    if (val > 798 && val <= 864) { btnNum = 13; }
-    if (val > 733 && val <= 798) { btnNum = 12; }
-    if (val > 671 && val <= 733) { btnNum = 11; }
-    if (val > 608 && val <= 671) { btnNum = 10; }
-    if (val > 543 && val <= 608) { btnNum = 9; }
-    if (val > 479 && val <= 543) { btnNum = 8; }
-    if (val > 413 && val <= 479) { btnNum = 7; }
-    if (val > 348 && val <= 413) { btnNum = 6; }
-    if (val > 285 && val <= 348) { btnNum = 5; }
-    if (val > 221 && val <= 285) { btnNum = 4; }
-    if (val > 157 && val <= 221) { btnNum = 3; }
-    if (val > 92 && val <= 157) { btnNum = 2; }
-    if (val > 30 && val <= 92) { btnNum = 1; }
-    if (val >= 0 && val <= 30) { btnNum = 0; }
-
-    //Serial.print(val); Serial.print(" - Btn #"); Serial.println(btnNum);
-    sendKeyboardShortcut(btnNum);
+    byte firstReadingBtn = getBtnNum(val);
     
-    delay(500); // Note: if you hold down button for more than this, the keyboard shortcut will be sent again!
-    //Serial.println("-----");
+    // Make sure we have the same value at least 29 out of 30 times.
+    byte sameBtnCtr = 0;
+    for (byte i = 0; i < 30; i++) {
+      val = analogRead(analogPin);
+      if (firstReadingBtn == getBtnNum(val)) {
+        sameBtnCtr++;
+      }
+    }
+
+    if (sameBtnCtr >= 29) {
+      Serial.print("[");
+      Serial.print(sameBtnCtr);
+      Serial.print("] ");
+      Serial.print(val); Serial.print(" - Btn #"); Serial.println(firstReadingBtn);
+      sendKeyboardShortcut(firstReadingBtn);
+      delay(250);  // in case there loose wire fluctuations, this will give me time to get finger off button, before it rapidly fires.
+
+      // Just stay here until button is released.
+      while (val <= 970) {
+        delay(1);
+        val = analogRead(analogPin);
+      }
+    } else {
+      Serial.print("[");
+      Serial.print(sameBtnCtr);
+      Serial.print("] xxxxx firstReadingBtn: ");
+      Serial.println(firstReadingBtn);
+    }
   }
+}
+
+byte getBtnNum(int val) {
+  byte b = 255;
+  
+  if (val > 929 && val <= 970) { b = 15; }
+  if (val > 864 && val <= 929) { b = 14; }
+  if (val > 798 && val <= 864) { b = 13; }
+  if (val > 733 && val <= 798) { b = 12; }
+  if (val > 671 && val <= 733) { b = 11; }
+  if (val > 608 && val <= 671) { b = 10; }
+  if (val > 543 && val <= 608) { b = 9; }
+  if (val > 479 && val <= 543) { b = 8; }
+  if (val > 413 && val <= 479) { b = 7; }
+  if (val > 348 && val <= 413) { b = 6; }
+  if (val > 285 && val <= 348) { b = 5; }
+  if (val > 221 && val <= 285) { b = 4; }
+  if (val > 157 && val <= 221) { b = 3; }
+  if (val > 92 && val <= 157) { b = 2; }
+  if (val > 30 && val <= 92) { b = 1; }
+  if (val >= 0 && val <= 30) { b = 0; }
+  
+  return b;
 }
 
 void sendKeyboardShortcut(byte btnNum) {
